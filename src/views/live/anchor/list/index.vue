@@ -7,7 +7,7 @@
     ></HSearch>
     <n-data-table
       remote
-      :scroll-x="1400"
+      :scroll-x="scrollX"
       :loading="tableListLoading"
       :columns="columns"
       :data="tableListData"
@@ -23,8 +23,7 @@ import { NButton, NPopconfirm, NSpace } from 'naive-ui';
 import { TableColumns } from 'naive-ui/es/data-table/src/interface';
 import { h, onMounted, ref, watch } from 'vue';
 
-import { fetchLiveList } from '@/api/live';
-import { fetchDeleteApiV1Clients } from '@/api/srs';
+import { fetchCloseLiveByLiveRoomId, fetchLiveList } from '@/api/live';
 import HSearch from '@/components/Base/Search';
 import { usePage } from '@/hooks/use-page';
 import { ILive, LiveRoomIsShowEnum, LiveRoomStatusEnum } from '@/interface';
@@ -37,15 +36,15 @@ const total = ref(0);
 const pagination = usePage();
 const tableListLoading = ref(false);
 const params = ref<{
-  live_room_is_show: LiveRoomIsShowEnum;
-  live_room_status: LiveRoomStatusEnum;
+  is_show: LiveRoomIsShowEnum;
+  status: LiveRoomStatusEnum;
   orderName: string;
   orderBy: string;
   nowPage?: number;
   pageSize?: number;
 }>({
-  live_room_is_show: LiveRoomIsShowEnum.yes,
-  live_room_status: LiveRoomStatusEnum.normal,
+  is_show: LiveRoomIsShowEnum.yes,
+  status: LiveRoomStatusEnum.normal,
   nowPage: 1,
   pageSize: 20,
   orderBy: 'desc',
@@ -74,15 +73,9 @@ const createColumns = () => {
                 'negative-text': '取消',
                 'on-positive-click': async () => {
                   // 流信息中的stream.publish.cid就是推流的客户端id：
-                  const res = await fetchDeleteApiV1Clients(row.srs_client_id!);
-                  if (res.data.code === 0) {
-                    window.$message.success('踢掉成功！');
-                    handlePageChange(1);
-                  } else {
-                    window.$message.error(
-                      `踢掉失败,${JSON.stringify(res.data)}`
-                    );
-                  }
+                  await fetchCloseLiveByLiveRoomId(row.live_room_id!);
+                  window.$message.info('已执行踢掉指令');
+                  handlePageChange(1);
                 },
                 'on-negative-click': () => {
                   window.$message.info('已取消!');
@@ -110,7 +103,12 @@ const createColumns = () => {
 };
 
 const columns = createColumns();
-
+const scrollX = ref(0);
+columns.forEach((item) => {
+  if (item.width) {
+    scrollX.value += Number(item.width);
+  }
+});
 onMounted(() => {
   handlePageChange(1);
 });

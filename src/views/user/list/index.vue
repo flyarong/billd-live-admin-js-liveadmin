@@ -7,7 +7,7 @@
     ></HSearch>
     <n-data-table
       remote
-      :scroll-x="1000"
+      :scroll-x="scrollX"
       :loading="tableListLoading"
       :columns="columns"
       :data="tableListData"
@@ -94,7 +94,7 @@ import AddUser from '../add/index.vue';
 import { columnsConfig } from './config/columns.config';
 import { searchFormConfig } from './config/search.config';
 
-interface ISearch extends IUser, IList {}
+interface ISearch extends IUser, IList<any> {}
 
 const rules = {
   username: {
@@ -133,6 +133,7 @@ const createColumns = (): DataTableColumns<IUser> => {
   const action: TableColumn<IUser> = {
     title: '操作',
     key: 'actions',
+    width: 200,
     fixed: 'right',
     align: 'center',
     render(row) {
@@ -196,6 +197,12 @@ const createColumns = (): DataTableColumns<IUser> => {
 };
 
 const columns = createColumns();
+const scrollX = ref(0);
+columns.forEach((item) => {
+  if (item.width) {
+    scrollX.value += Number(item.width);
+  }
+});
 
 onMounted(() => {
   handlePageChange(1);

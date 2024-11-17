@@ -155,7 +155,7 @@ export interface ILiveRoom {
   /** 拉流是否需要鉴权 */
   pull_is_should_auth?: LiveRoomPullIsShouldAuthEnum;
   /** 权重 */
-  weight?: number;
+  priority?: number;
   /** 推流秘钥 */
   key?: string;
   /** 直播间类型 */
@@ -261,6 +261,83 @@ export interface ILiveRoom {
   user_live_room?: IUserLiveRoom & { user: IUser };
 
   hidden_cover_img?: boolean;
+
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
+
+export interface IRedbagSend {
+  id?: number;
+
+  user_id?: number;
+  live_room_id?: number;
+
+  total_amount?: string;
+  remaining_amount?: string;
+  total_nums?: number;
+  remaining_nums?: number;
+  remark?: string;
+
+  /** 用户信息 */
+  user?: IUser;
+  /** 直播间信息 */
+  live_room?: IGoods;
+
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
+
+export enum DanmuMsgTypeEnum {
+  danmu,
+  otherJoin,
+  userLeaved,
+  system,
+  redbag,
+}
+
+export enum WsMessageMsgIsFileEnum {
+  yes,
+  no,
+}
+
+export enum WsMessageContentTypeEnum {
+  txt,
+  img,
+  video,
+}
+
+export enum WsMessageMsgIsShowEnum {
+  yes,
+  no,
+}
+
+export enum WsMessageMsgIsVerifyEnum {
+  yes,
+  no,
+}
+
+export interface IWsMessage {
+  id?: number;
+  username?: string;
+  origin_username?: string;
+  content_type?: WsMessageContentTypeEnum;
+  content?: string;
+  origin_content?: string;
+  redbag_send_id?: number;
+  live_room_id?: number;
+  user_id?: number;
+  ip?: string;
+  msg_type?: DanmuMsgTypeEnum;
+  user_agent?: string;
+  send_msg_time?: number;
+  is_show?: WsMessageMsgIsShowEnum;
+  is_verify?: WsMessageMsgIsVerifyEnum;
+  remark?: string;
+
+  user?: IUser;
+  redbag_send?: IRedbagSend;
 
   created_at?: string;
   updated_at?: string;
@@ -526,7 +603,8 @@ export enum FormTypeEnum {
   'switch' = 'switch',
   'upload' = 'upload',
   'treeSelect' = 'treeSelect',
-  'datePicker' = 'datePicker',
+  'datePickerRange' = 'datePickerRange',
+  'datePickerDatetime' = 'datePickerDatetime',
 }
 
 export interface IFrontend {
@@ -710,6 +788,7 @@ export enum GoodsTypeEnum {
   sponsors = 'sponsors',
   gift = 'gift',
   recharge = 'recharge',
+  qypShop = 'qypShop',
 }
 
 export interface IGoods {
@@ -719,12 +798,57 @@ export interface IGoods {
   desc?: string;
   short_desc?: string;
   cover?: string;
-  price?: string;
-  original_price?: string;
+  price?: number;
+  original_price?: number;
   nums?: number;
+  pay_nums?: number;
+  inventory?: number;
   badge?: string;
   badge_bg?: string;
   remark?: string;
+
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
+
+export enum LoginRecordEnum {
+  registerUsername,
+  registerId,
+  registerQq,
+  loginUsername,
+  loginId,
+  loginQq,
+}
+
+export interface ILoginRecord {
+  id?: number;
+  user_id?: number;
+  user_agent?: string;
+  type?: LoginRecordEnum;
+  ip?: string;
+  remark?: string;
+
+  user?: IUser;
+
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
+
+export enum GlobalMsgTypeEnum {
+  system,
+}
+
+export interface IGlobalMsg {
+  id?: number;
+  user_id?: number;
+  type?: GlobalMsgTypeEnum;
+  content?: string;
+  remark?: string;
+
+  user?: IUser;
+
   created_at?: string;
   updated_at?: string;
   deleted_at?: string;
@@ -795,7 +919,7 @@ export interface IArea {
   /** 备注 */
   remark?: string;
   /** 权重 */
-  weight?: number;
+  priority?: number;
   area_live_rooms?: IAreaLiveRoom[];
   live_room_is_show?: LiveRoomIsShowEnum;
   live_room_status?: LiveRoomStatusEnum;
@@ -820,18 +944,11 @@ export interface ISrsPublishStream {
   srs_stream_id?: string;
 }
 
-export interface ILive extends ISrsPublishStream {
+export type ILive = {
   id?: number;
-  /** 用户信息 */
-  user?: IUser;
-  /** 直播间信息 */
-  live_room?: ILiveRoom;
 
   socket_id?: string;
-  user_id?: number;
   live_room_id?: number;
-  live_room_is_show?: LiveRoomIsShowEnum;
-  live_room_status?: LiveRoomStatusEnum;
   /** 1开启;2关闭 */
   track_video?: number;
   /** 1开启;2关闭 */
@@ -840,7 +957,10 @@ export interface ILive extends ISrsPublishStream {
   created_at?: string;
   updated_at?: string;
   deleted_at?: string;
-}
+} & ISrsPublishStream & {
+    /** 直播间信息 */
+    live_room?: ILiveRoom;
+  };
 
 export interface ILivePlay extends ISrsPublishStream {
   id?: number;
@@ -929,13 +1049,24 @@ export interface IPaging<T> {
   rows: T[];
 }
 
-export interface IList {
+// export interface IList {
+//   nowPage?: number;
+//   pageSize?: number;
+//   orderBy?: string;
+//   orderName?: string;
+//   keyWord?: string;
+// }
+
+export type IList<T> = {
   nowPage?: number;
   pageSize?: number;
   orderBy?: string;
   orderName?: string;
   keyWord?: string;
-}
+  rangTimeType?: 'created_at' | 'updated_at' | 'deleted_at';
+  rangTimeStart?: string;
+  rangTimeEnd?: string;
+} & T;
 export interface IWorks {
   id?: number;
   name?: string;
@@ -966,4 +1097,16 @@ export enum modalTypeEnum {
 export enum modalUserTypeEnum {
   EDIT = 1,
   EDIT_ROLE = 2,
+}
+
+export interface ICredential {
+  expiredTime: number;
+  expiration: string;
+  credentials: {
+    sessionToken: string;
+    tmpSecretId: string;
+    tmpSecretKey: string;
+  };
+  requestId: string;
+  startTime: number;
 }

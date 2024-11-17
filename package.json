@@ -13,11 +13,17 @@
     "build:beta": "vite build",
     "build:prod": "vite build",
     "copy": "ts-node ./deploy/handleGiteeJenkins.mjs",
+    "cz": "cz",
     "deploy:beta": "node ./deploy/index.js --beta",
     "deploy:prod": "node ./deploy/index.js --prod",
     "dev": "vite",
     "preview": "vite preview",
     "release": ""
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "dependencies": {
     "@kangc/v-md-editor": "^2.3.17",
@@ -27,11 +33,13 @@
     "billd-html-webpack-plugin": "^1.0.6",
     "billd-scss": "^0.0.8",
     "billd-utils": "^0.0.22",
+    "cos-js-sdk-v5": "^1.8.6",
     "highlight.js": "^11.8.0",
     "js-cookie": "^3.0.5",
     "naive-ui": "^2.34.4",
     "pinia": "^2.1.6",
     "spark-md5": "^3.0.2",
+    "ua-parser-js": "^1.0.39",
     "vconsole": "^3.15.1",
     "vue": "^3.3.4",
     "vue-i18n": "^9",
@@ -43,6 +51,7 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^11.0.3",
+    "commitizen": "^4.3.1",
     "eslint": "^8.47.0",
     "eslint-import-resolver-typescript": "^3.6.0",
     "eslint-plugin-import": "^2.28.0",

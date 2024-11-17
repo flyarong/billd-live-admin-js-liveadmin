@@ -1,22 +1,19 @@
-import { LiveRoomTypeEnum } from './interface';
+import {
+  GlobalMsgTypeEnum,
+  GoodsTypeEnum,
+  LiveRoomTypeEnum,
+  LoginRecordEnum,
+} from '@/interface';
+
+import { prodDomain } from './spec-config';
 
 export const GITHUB_REPO = 'https://github.com/galaxy-s10/billd-live-admin';
+
 export const REDIRECT_URI = 'https://admin.hsslive.cn/oauth/';
-
-export const QQ_CLIENT_ID = '101934585';
-export const QQ_OAUTH_URL =
-  'https://graph.qq.com/oauth2.0/authorize?response_type=code&';
-
-export const GITHUB_CLIENT_ID = '8c2c07b574ae70ecfa9d';
-export const GITHUB_OAUTH_URL = 'https://github.com/login/oauth/authorize?';
-
-export const QINIU_CDN_URL = 'https://resource.hsslive.cn/';
 
 export const LIVE_CLIENT_URL = 'https://live.hsslive.cn';
 
 export const POSTMESSAGE_TYPE = ['qq_login', 'github_login', 'login_expired'];
-
-export const QINIU_BUCKET = 'hssblog'; // 七牛云bucket
 
 export const AXIOS_BASEURL =
   process.env.NODE_ENV === 'development'
@@ -24,25 +21,19 @@ export const AXIOS_BASEURL =
     : 'https://live-api.hsslive.cn';
 
 export const COOKIE_DOMAIN =
-  process.env.NODE_ENV === 'development' ? undefined : '.hsslive.cn';
+  process.env.NODE_ENV === 'development' ? undefined : `.${prodDomain}`;
 
-export const QINIU_LIVE = {
-  domain: 'resource.hsslive.cn',
-  url: 'https://resource.hsslive.cn/',
-  bucket: 'hssblog',
-  prefix: {
-    'billd-live/image/': 'billd-live/image/',
-    'billd-live/msg-image/': 'billd-live/msg-image/',
-  },
+export const GlobalMsgTypeEnumMap = {
+  [GlobalMsgTypeEnum.system]: '系统消息',
 };
 
-export const QINIU_BACKUP = {
-  domain: 'backup.hsslive.cn',
-  url: 'http://backup.hsslive.cn/',
-  bucket: 'hss-backup',
-  prefix: {
-    'mysql/': 'mysql/',
-  },
+export const LoginRecordEnumMap = {
+  [LoginRecordEnum.loginId]: '账号密码登录',
+  [LoginRecordEnum.loginUsername]: '用户名密码登录',
+  [LoginRecordEnum.loginQq]: 'qq登录',
+  [LoginRecordEnum.registerId]: '账号密码注册',
+  [LoginRecordEnum.registerUsername]: '用户名密码注册',
+  [LoginRecordEnum.registerQq]: 'qq注册',
 };
 
 export const liveRoomTypeEnumMap = {
@@ -129,7 +120,6 @@ export const ROUTE_SORT = {
   comment: 199,
   star: 199,
 
-  setting: 180,
   schedule: 180,
   live: 180,
 
@@ -137,10 +127,14 @@ export const ROUTE_SORT = {
   auth: 110,
   role: 110,
   order: 110,
+  goods: 110,
+  loginRecord: 110,
+  globalMsg: 110,
   thirdUser: 100,
 
-  // comment: 80,
-  // star: 80,
+  setting: 90,
+  liveConfig: 90,
+  github: 10,
 
   qiniu: 70,
 
@@ -153,4 +147,12 @@ export const ROUTE_SORT = {
   theme: 60,
 
   error: 10,
+};
+
+export const goodsTypeEnumMap = {
+  [GoodsTypeEnum.recharge]: '充值',
+  [GoodsTypeEnum.gift]: '礼物',
+  [GoodsTypeEnum.sponsors]: '赞助',
+  [GoodsTypeEnum.support]: '服务',
+  [GoodsTypeEnum.qypShop]: '逸鹏的商品',
 };
